@@ -6,28 +6,33 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void deposit(Accounts account, double amount) {
-        account.deposit(amount);
-        System.out.println("Deposited ₹" + amount + " into " + account.getAccountNumber());
+        account.setBalance(account.getBalance() + amount);
+        System.out.println("Deposited ₹" + amount + ". New Balance: ₹" + account.getBalance());
     }
 
     @Override
     public boolean withdraw(Accounts account, double amount) {
-        boolean success = account.withdraw(amount);
-        if (success) {
-            System.out.println("Withdrew ₹" + amount + " from " + account.getAccountNumber());
-        } else {
-            System.out.println("Insufficient funds to withdraw ₹" + amount + " from " + account.getAccountNumber());
+        if (account instanceof models.CurrentAccount) {
+            return ((models.CurrentAccount) account).withdraw(amount);
         }
-        return success;
+
+        if (account.getBalance() >= amount) {
+            account.setBalance(account.getBalance() - amount);
+            System.out.println("Withdrawn ₹" + amount + ". New Balance: ₹" + account.getBalance());
+            return true;
+        } else {
+            System.out.println("Insufficient balance. Withdrawal of ₹" + amount + " failed.");
+            return false;
+        }
     }
 
     @Override
     public void transfer(Accounts from, Accounts to, double amount) {
         if (withdraw(from, amount)) {
             deposit(to, amount);
-            System.out.println("Transferred ₹" + amount + " from " + from.getAccountNumber() + " to " + to.getAccountNumber());
+            System.out.println("Transferred ₹" + amount + " to account " + to.getAccountNumber());
         } else {
-            System.out.println("Transfer failed: Insufficient balance.");
+            System.out.println("Transfer failed due to insufficient funds.");
         }
     }
 }

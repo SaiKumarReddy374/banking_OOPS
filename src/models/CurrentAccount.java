@@ -17,7 +17,9 @@ public class CurrentAccount extends Accounts {
         if (balance + OVERDRAFT_LIMIT >= amount) {
             balance -= amount;
             return true;
+        } else {
+            System.out.println("Overdraft limit exceeded. Withdrawal failed.");
+            return false;
         }
-        return false;
     }
 }
